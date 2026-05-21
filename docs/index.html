@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESP32 Cloud Control</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <main class="app">
+    <h1>ESP32 Cloud Control</h1>
+
+    <section class="card">
+      <h2>MQTT Connection</h2>
+
+      <label>Broker WebSocket URL</label>
+      <input id="brokerUrl" value="wss://YOUR_CLUSTER.s1.eu.hivemq.cloud:8884/mqtt" />
+
+      <label>Username</label>
+      <input id="mqttUser" placeholder="HiveMQ username" />
+
+      <label>Password</label>
+      <input id="mqttPass" type="password" placeholder="HiveMQ password" />
+
+      <button id="connectBtn">Connect</button>
+      <p>Status: <span id="status">Disconnected</span></p>
+    </section>
+
+    <section class="card">
+      <h2>Servo</h2>
+      <div class="grid">
+        <button onclick="sendCommand('servo_left')">Servo Left</button>
+        <button onclick="sendCommand('servo_center')">Servo Center</button>
+        <button onclick="sendCommand('servo_right')">Servo Right</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Stepper Motor</h2>
+      <div class="grid">
+        <button onclick="sendCommand('stepper_left')">Stepper Left</button>
+        <button onclick="sendCommand('stepper_stop')">Stop</button>
+        <button onclick="sendCommand('stepper_right')">Stepper Right</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Red LED</h2>
+      <div class="grid">
+        <button onclick="sendCommand('led_on')">LED ON</button>
+        <button onclick="sendCommand('led_off')">LED OFF</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Camera Stream</h2>
+
+      <label>MJPEG/ngrok URL</label>
+      <input id="videoUrl" placeholder="https://your-ngrok-url.ngrok-free.app/stream" />
+
+      <button onclick="loadVideo()">Load Video</button>
+
+      <div class="videoBox">
+        <img id="videoStream" alt="Camera stream will appear here" />
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
