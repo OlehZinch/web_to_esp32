@@ -1,86 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ESP32 Cloud Control</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Project X Command Console</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
-  <main class="dashboard">
-    <section class="control-window">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Remote Device Console</p>
-          <h1>ESP32 Cloud Control</h1>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PROJECT X · SOURCE WEB</p>
+        <h1>Command Console</h1>
+      </div>
+
+      <div class="topbar-actions">
+        <span id="status" class="status-chip disconnected">Disconnected</span>
+        <button id="openConnectModalBtn" class="btn ghost-btn" type="button">Cloud</button>
+      </div>
+    </header>
+
+    <section class="runtime-row">
+      <div class="runtime-card">
+        <span class="runtime-label">Last cmd</span>
+        <span id="lastCmdLabel" class="runtime-value">none</span>
+      </div>
+      <div class="runtime-card">
+        <span class="runtime-label">Last response</span>
+        <span id="lastRespLabel" class="runtime-value">none</span>
+      </div>
+    </section>
+
+    <section class="safety-row">
+      <button id="armBtn" class="btn" type="button">ARM</button>
+      <button id="disarmBtn" class="btn" type="button">DISARM</button>
+      <button id="estopBtn" class="btn estop-btn" type="button">E-STOP</button>
+    </section>
+
+    <nav class="panel-tabs" aria-label="Control sections">
+      <button class="tab-btn active" type="button" data-panel-tab="streamPanel">Stream</button>
+      <button class="tab-btn" type="button" data-panel-tab="servoPanel">Servo</button>
+      <button class="tab-btn" type="button" data-panel-tab="stepperPanel">Stepper</button>
+      <button class="tab-btn" type="button" data-panel-tab="ledPanel">LED</button>
+      <button class="tab-btn" type="button" data-panel-tab="systemPanel">System</button>
+    </nav>
+
+    <section class="panel-stage">
+      <article id="streamPanel" class="control-panel active">
+        <div class="panel-head">
+          <h2>Live Stream</h2>
+          <button id="loadVideoBtn" class="btn ghost-btn" type="button">Load</button>
         </div>
 
-        <div class="topbar-actions">
-          <div class="status-card">
-            <span class="status-label">Status</span>
-            <span id="status" class="status-chip disconnected">Disconnected</span>
-          </div>
-
-          <button id="openConnectModalBtn" class="ghost-btn" type="button">Cloud Connection</button>
-        </div>
-      </header>
-
-      <section class="stream-panel">
-        <div class="stream-header">
-          <div>
-            <h2>Live Stream</h2>
-            <p id="streamHint">Set a stream URL in cloud settings to load video.</p>
-          </div>
-
-          <div class="stream-actions">
-            <button id="loadVideoBtn" type="button">Load Stream</button>
-            <button id="disconnectBtn" class="danger-btn" type="button">Disconnect</button>
-          </div>
-        </div>
-
+        <p id="streamHint" class="stream-hint">Set stream URL in Cloud settings.</p>
         <div class="video-frame">
-          <img id="videoStream" alt="Camera stream will appear here" />
-          <div id="videoPlaceholder" class="video-placeholder">
-            <span>Video stream is not loaded</span>
-          </div>
+          <img id="videoStream" alt="Video stream" />
+          <div id="videoPlaceholder" class="video-placeholder">NO STREAM</div>
         </div>
-      </section>
+      </article>
 
-      <section class="controls-panel">
-        <div class="panel-heading">
-          <h2>Control Panel</h2>
-          <p>Command groups are organized below the stream for quick operation.</p>
+      <article id="servoPanel" class="control-panel">
+        <div class="panel-head">
+          <h2>SERVO_SET_ANGLE</h2>
+          <button id="servoApplyBtn" class="btn ghost-btn" type="button">Apply</button>
         </div>
 
-        <div class="control-groups">
-          <article class="control-card">
-            <h3>Servo</h3>
-            <div class="button-grid">
-              <button type="button" data-command="servo_left">Left</button>
-              <button type="button" data-command="servo_center">Center</button>
-              <button type="button" data-command="servo_right">Right</button>
-            </div>
-          </article>
-
-          <article class="control-card">
-            <h3>Stepper Motor</h3>
-            <div class="button-grid">
-              <button type="button" data-command="stepper_left">Left</button>
-              <button type="button" data-command="stepper_stop">Stop</button>
-              <button type="button" data-command="stepper_right">Right</button>
-            </div>
-          </article>
-
-          <article class="control-card">
-            <h3>Red LED</h3>
-            <div class="button-grid compact-grid">
-              <button type="button" data-command="led_on">ON</button>
-              <button type="button" data-command="led_off">OFF</button>
-            </div>
-          </article>
+        <div class="field-grid">
+          <label for="servoIdInput">
+            Servo ID
+            <input id="servoIdInput" type="number" min="1" max="16" value="1" />
+          </label>
+          <label for="servoAngleInput">
+            Angle deg
+            <input id="servoAngleInput" type="number" min="0" max="180" value="90" />
+          </label>
         </div>
-      </section>
+
+        <div class="quick-grid">
+          <button id="servoLeftBtn" class="btn" type="button">0°</button>
+          <button id="servoCenterBtn" class="btn" type="button">90°</button>
+          <button id="servoRightBtn" class="btn" type="button">180°</button>
+        </div>
+      </article>
+
+      <article id="stepperPanel" class="control-panel">
+        <div class="panel-head">
+          <h2>STEPPER_MOVE_STEPS</h2>
+        </div>
+
+        <div class="field-grid">
+          <label for="stepperIdInput">
+            Stepper ID
+            <input id="stepperIdInput" type="number" min="1" max="8" value="1" />
+          </label>
+          <label for="stepperStepsInput">
+            Steps
+            <input id="stepperStepsInput" type="number" min="1" max="10000" value="200" />
+          </label>
+          <label for="stepperSpeedInput">
+            Speed sps
+            <input id="stepperSpeedInput" type="number" min="1" max="5000" value="300" />
+          </label>
+        </div>
+
+        <div class="quick-grid">
+          <button id="stepperLeftBtn" class="btn" type="button">CCW</button>
+          <button id="stepperStopBtn" class="btn ghost-btn" type="button">STOP</button>
+          <button id="stepperRightBtn" class="btn" type="button">CW</button>
+        </div>
+      </article>
+
+      <article id="ledPanel" class="control-panel">
+        <div class="panel-head">
+          <h2>LED_SET</h2>
+        </div>
+
+        <div class="field-grid">
+          <label for="ledIdInput">
+            LED ID
+            <input id="ledIdInput" type="number" min="1" max="16" value="1" />
+          </label>
+        </div>
+
+        <div class="quick-grid led-grid">
+          <button id="ledOnBtn" class="btn" type="button">ON</button>
+          <button id="ledOffBtn" class="btn ghost-btn" type="button">OFF</button>
+        </div>
+      </article>
+
+      <article id="systemPanel" class="control-panel">
+        <div class="panel-head">
+          <h2>System Commands</h2>
+        </div>
+
+        <div class="quick-grid system-grid">
+          <button id="sysPingBtn" class="btn" type="button">SYS_PING</button>
+          <button id="sysStatusBtn" class="btn" type="button">SYS_GET_STATUS</button>
+          <button id="telemBtn" class="btn" type="button">TELEM_GET_STATUS</button>
+          <button id="clearEstopBtn" class="btn ghost-btn" type="button">SAFETY_CLEAR_ESTOP</button>
+        </div>
+      </article>
     </section>
   </main>
 
@@ -90,11 +150,10 @@
     <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="connectModalTitle">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">Connection Setup</p>
-          <h2 id="connectModalTitle">Cloud Access</h2>
+          <p class="eyebrow">MQTT / PROTOCOL SETTINGS</p>
+          <h2 id="connectModalTitle">Cloud Setup</h2>
         </div>
-
-        <button id="closeConnectModalBtn" class="icon-btn" type="button" aria-label="Close connection window">×</button>
+        <button id="closeConnectModalBtn" class="btn icon-btn" type="button" aria-label="Close">×</button>
       </header>
 
       <div class="modal-body">
@@ -107,12 +166,28 @@
         <label for="mqttPass">Password</label>
         <input id="mqttPass" type="password" placeholder="HiveMQ password" />
 
-        <label for="videoUrl">MJPEG/ngrok URL</label>
+        <label for="mqttCommandTopic">Command topic</label>
+        <input id="mqttCommandTopic" value="projectx/commands" />
+
+        <label for="mqttResponseTopic">Response topic</label>
+        <input id="mqttResponseTopic" value="projectx/responses" />
+
+        <label for="videoUrl">Stream URL</label>
         <input id="videoUrl" placeholder="https://your-ngrok-url.ngrok-free.app/stream" />
+
+        <label for="vehicleId">Vehicle ID</label>
+        <input id="vehicleId" value="px_mvp_01" />
+
+        <label for="sourceId">Source</label>
+        <input id="sourceId" value="web" />
+
+        <label for="targetId">Target</label>
+        <input id="targetId" value="esp32_1" />
       </div>
 
       <footer class="modal-footer">
-        <button id="saveConnectBtn" type="button">Connect to Cloud</button>
+        <button id="disconnectBtn" class="btn ghost-btn" type="button">Disconnect</button>
+        <button id="saveConnectBtn" class="btn" type="button">Connect</button>
       </footer>
     </section>
   </div>
