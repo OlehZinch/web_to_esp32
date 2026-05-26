@@ -8,3 +8,4 @@ __pycache__/
 !.gitignore
 !docs/
 !docs/**
+docs/config.js

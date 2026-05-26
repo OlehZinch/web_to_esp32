@@ -147,6 +147,13 @@ input {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.notice-row {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .btn {
   min-height: 41px;
   border: 1px solid var(--line);
@@ -209,6 +216,12 @@ input {
   border-radius: 14px;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
   padding: 10px;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .control-panel {
@@ -278,9 +291,53 @@ input:focus {
   gap: 8px;
 }
 
+.servo-grid,
+.stepper-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .led-grid,
 .system-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-inline {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+}
+
+.field-inline label {
+  margin-bottom: 8px;
+}
+
+.logs-stage {
+  display: grid;
+  min-height: 0;
+}
+
+.logs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 0;
+}
+
+.log-box {
+  min-height: 190px;
+  max-height: 260px;
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0b0b0b;
+  font-family: "Space Mono", monospace;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .stream-hint {
@@ -385,6 +442,19 @@ input:focus {
 
   #stepperPanel .field-grid {
     grid-template-columns: 1fr;
+  }
+
+  .control-grid,
+  .logs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .field-inline label {
+    margin-bottom: 0;
   }
 }
 
