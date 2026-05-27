@@ -112,7 +112,7 @@ function bindEvents() {
 function hydrateSettings() {
   const defaults = {
     protocol: globalMqtt.protocol || "wss",
-    host: globalMqtt.host || "YOUR_CLUSTER.s1.eu.hivemq.cloud",
+    host: globalMqtt.host || "b760ab07919a47a287cb0d3136ec388f.s1.eu.hivemq.cloud",
     port: String(globalMqtt.port || 8884),
     path: globalMqtt.path || "/mqtt",
     username: globalMqtt.username || "",
