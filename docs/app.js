@@ -135,6 +135,9 @@ function hydrateSettings() {
   }
 
   const settings = { ...defaults, ...saved };
+  if (!String(settings.host || "").trim()) {
+    settings.host = defaults.host;
+  }
   mqttProtocolInput.value = settings.protocol;
   mqttHostInput.value = settings.host;
   mqttPortInput.value = settings.port;
