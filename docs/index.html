@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Project X MQTT Control</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile.css" />
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js" defer></script>
   <script src="config.js" defer></script>
   <script src="app.js" defer></script>
@@ -38,6 +39,19 @@
       <p class="stream-hint">
         For public GitHub Pages do not store private MQTT credentials in committed files.
       </p>
+    </section>
+
+    <section class="panel-stage stream-stage">
+      <article class="control-panel active">
+        <div class="panel-head"><h2>Stream</h2></div>
+        <div class="video-frame">
+          <img
+            id="videoStream"
+            src="http://134.98.129.171:8000/stream"
+            alt="XIAO cloud stream"
+          />
+        </div>
+      </article>
     </section>
 
     <section class="panel-stage">
@@ -112,39 +126,19 @@
     <section class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="connectModalTitle">
       <header class="modal-header">
         <div>
-          <p class="eyebrow">MQTT / PROTOCOL SETTINGS</p>
+          <p class="eyebrow">MQTT AUTH</p>
           <h2 id="connectModalTitle">Cloud Setup</h2>
         </div>
         <button id="closeConnectModalBtn" class="btn icon-btn" type="button" aria-label="Close">×</button>
       </header>
 
       <div class="modal-body">
-        <label for="mqttProtocol">Protocol</label>
-        <input id="mqttProtocol" value="wss" />
-
-        <label for="mqttHost">MQTT host</label>
-        <input id="mqttHost" value="b760ab07919a47a287cb0d3136ec388f.s1.eu.hivemq.cloud" />
-
-        <label for="mqttPort">MQTT WebSocket TLS port</label>
-        <input id="mqttPort" type="number" value="8884" />
-
-        <label for="mqttPath">WebSocket path</label>
-        <input id="mqttPath" value="/mqtt" />
-
         <label for="mqttUser">Username</label>
         <input id="mqttUser" placeholder="HiveMQ username" />
 
         <label for="mqttPass">Password</label>
         <input id="mqttPass" type="password" placeholder="HiveMQ password" />
-
-        <label for="mqttCmdTopic">Command topic</label>
-        <input id="mqttCmdTopic" value="projectx/device001/cmd" />
-
-        <label for="mqttStatusTopic">Status topic</label>
-        <input id="mqttStatusTopic" value="projectx/device001/status" />
-
-        <label for="mqttTelemetryTopic">Telemetry topic</label>
-        <input id="mqttTelemetryTopic" value="projectx/device001/telemetry" />
+        <p class="stream-hint">Broker, topics, and stream URL are preconfigured by default.</p>
       </div>
 
       <footer class="modal-footer">

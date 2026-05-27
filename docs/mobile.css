@@ -1,0 +1,107 @@
+@media (max-width: 720px) {
+  .app-shell {
+    gap: 7px;
+    padding: calc(6px + env(safe-area-inset-top, 0px)) 8px calc(9px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .topbar-actions {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  .runtime-row,
+  .control-grid,
+  .logs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notice-row,
+  .runtime-card,
+  .panel-stage {
+    border-radius: 10px;
+    padding: 7px 8px;
+  }
+
+  .notice-row {
+    display: none;
+  }
+
+  .btn {
+    min-height: 34px;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+  }
+
+  .quick-grid {
+    gap: 6px;
+  }
+
+  .field-inline {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .field-inline label {
+    margin-bottom: 0;
+  }
+
+  input {
+    font-size: 0.78rem;
+    padding: 7px 8px;
+  }
+
+  .video-frame {
+    aspect-ratio: 4 / 3;
+    min-height: 150px;
+  }
+
+  .log-box {
+    min-height: 120px;
+    max-height: 170px;
+    font-size: 0.66rem;
+  }
+
+  .modal {
+    padding: 8px;
+  }
+
+  .modal-dialog {
+    padding: 10px;
+    border-radius: 12px;
+    max-height: 94dvh;
+  }
+
+  .modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 460px) {
+  .servo-grid,
+  .stepper-grid,
+  .led-grid,
+  .system-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar h1 {
+    font-size: 0.93rem;
+  }
+
+  .eyebrow {
+    font-size: 0.56rem;
+    letter-spacing: 0.17em;
+  }
+
+  .status-chip {
+    padding: 5px 8px;
+    font-size: 0.68rem;
+  }
+}

@@ -15,15 +15,9 @@ const closeConnectModalBtn = document.getElementById("closeConnectModalBtn");
 const saveConnectBtn = document.getElementById("saveConnectBtn");
 const disconnectBtn = document.getElementById("disconnectBtn");
 
-const mqttProtocolInput = document.getElementById("mqttProtocol");
-const mqttHostInput = document.getElementById("mqttHost");
-const mqttPortInput = document.getElementById("mqttPort");
-const mqttPathInput = document.getElementById("mqttPath");
 const mqttUserInput = document.getElementById("mqttUser");
 const mqttPassInput = document.getElementById("mqttPass");
-const mqttCmdTopicInput = document.getElementById("mqttCmdTopic");
-const mqttStatusTopicInput = document.getElementById("mqttStatusTopic");
-const mqttTelemetryTopicInput = document.getElementById("mqttTelemetryTopic");
+const videoStream = document.getElementById("videoStream");
 
 const ledOnBtn = document.getElementById("ledOnBtn");
 const ledOffBtn = document.getElementById("ledOffBtn");
@@ -50,12 +44,28 @@ const sendJsonLedBtn = document.getElementById("sendJsonLedBtn");
 const globalCfg = window.PROJECTX_WEB_CONFIG || {};
 const globalMqtt = globalCfg.mqtt || {};
 const globalTopics = globalCfg.topics || {};
+const globalStream = globalCfg.stream || {};
+
+const mqttDefaults = {
+  protocol: globalMqtt.protocol || "wss",
+  host: globalMqtt.host || "b760ab07919a47a287cb0d3136ec388f.s1.eu.hivemq.cloud",
+  port: Number(globalMqtt.port || 8884),
+  path: globalMqtt.path || "/mqtt",
+  clientIdPrefix: globalMqtt.clientIdPrefix || "projectx-web-"
+};
+
+const mqttTopics = {
+  cmd: globalTopics.cmd || "projectx/device001/cmd",
+  status: globalTopics.status || "projectx/device001/status",
+  telemetry: globalTopics.telemetry || "projectx/device001/telemetry"
+};
 
 hydrateSettings();
 bindEvents();
 updateConnectionState("disconnected", "Disconnected");
 appendLog(sentLog, "Ready");
 appendLog(recvLog, "Waiting for MQTT messages");
+hydrateStream();
 
 function bindEvents() {
   openConnectModalBtn.addEventListener("click", openModal);
@@ -95,15 +105,8 @@ function bindEvents() {
   sendJsonLedBtn.addEventListener("click", () => sendJsonCommand({ cmd: "led_set", state: true }));
 
   [
-    mqttProtocolInput,
-    mqttHostInput,
-    mqttPortInput,
-    mqttPathInput,
     mqttUserInput,
     mqttPassInput,
-    mqttCmdTopicInput,
-    mqttStatusTopicInput,
-    mqttTelemetryTopicInput,
     servoAngleInput,
     stepperStepsInput
   ].forEach((input) => input.addEventListener("change", persistSettings));
@@ -111,15 +114,8 @@ function bindEvents() {
 
 function hydrateSettings() {
   const defaults = {
-    protocol: globalMqtt.protocol || "wss",
-    host: globalMqtt.host || "b760ab07919a47a287cb0d3136ec388f.s1.eu.hivemq.cloud",
-    port: String(globalMqtt.port || 8884),
-    path: globalMqtt.path || "/mqtt",
     username: globalMqtt.username || "",
     password: globalMqtt.password || "",
-    cmdTopic: globalTopics.cmd || "projectx/device001/cmd",
-    statusTopic: globalTopics.status || "projectx/device001/status",
-    telemetryTopic: globalTopics.telemetry || "projectx/device001/telemetry",
     servoAngle: "90",
     stepperSteps: "128"
   };
@@ -135,33 +131,16 @@ function hydrateSettings() {
   }
 
   const settings = { ...defaults, ...saved };
-  if (!String(settings.host || "").trim()) {
-    settings.host = defaults.host;
-  }
-  mqttProtocolInput.value = settings.protocol;
-  mqttHostInput.value = settings.host;
-  mqttPortInput.value = settings.port;
-  mqttPathInput.value = settings.path;
   mqttUserInput.value = settings.username;
   mqttPassInput.value = settings.password;
-  mqttCmdTopicInput.value = settings.cmdTopic;
-  mqttStatusTopicInput.value = settings.statusTopic;
-  mqttTelemetryTopicInput.value = settings.telemetryTopic;
   servoAngleInput.value = settings.servoAngle;
   stepperStepsInput.value = settings.stepperSteps;
 }
 
 function persistSettings() {
   const settings = {
-    protocol: mqttProtocolInput.value.trim(),
-    host: mqttHostInput.value.trim(),
-    port: mqttPortInput.value.trim(),
-    path: mqttPathInput.value.trim(),
     username: mqttUserInput.value.trim(),
     password: mqttPassInput.value,
-    cmdTopic: mqttCmdTopicInput.value.trim(),
-    statusTopic: mqttStatusTopicInput.value.trim(),
-    telemetryTopic: mqttTelemetryTopicInput.value.trim(),
     servoAngle: servoAngleInput.value.trim(),
     stepperSteps: stepperStepsInput.value.trim()
   };
@@ -185,10 +164,10 @@ function closeModal() {
 }
 
 function buildBrokerUrl() {
-  const protocol = mqttProtocolInput.value.trim() || "wss";
-  const host = mqttHostInput.value.trim();
-  const port = Number(mqttPortInput.value);
-  let path = mqttPathInput.value.trim() || "/mqtt";
+  const protocol = String(mqttDefaults.protocol || "wss").trim();
+  const host = String(mqttDefaults.host || "").trim();
+  const port = Number(mqttDefaults.port);
+  let path = String(mqttDefaults.path || "/mqtt").trim() || "/mqtt";
 
   if (!host || !Number.isFinite(port)) {
     return "";
@@ -204,7 +183,7 @@ function buildBrokerUrl() {
 function connectMqtt() {
   const brokerUrl = buildBrokerUrl();
   if (!brokerUrl) {
-    alert("Fill MQTT protocol/host/port/path");
+    alert("MQTT defaults are missing in config.js");
     return;
   }
 
@@ -217,7 +196,7 @@ function connectMqtt() {
 
   const username = mqttUserInput.value.trim();
   const password = mqttPassInput.value;
-  const prefix = globalMqtt.clientIdPrefix || "projectx-web-";
+  const prefix = mqttDefaults.clientIdPrefix || "projectx-web-";
 
   const options = {
     clean: true,
@@ -276,8 +255,8 @@ function subscribeTopics() {
   }
 
   const topics = [
-    mqttStatusTopicInput.value.trim(),
-    mqttTelemetryTopicInput.value.trim()
+    mqttTopics.status.trim(),
+    mqttTopics.telemetry.trim()
   ].filter(Boolean);
 
   topics.forEach((topic) => {
@@ -339,9 +318,9 @@ function publishCommand(payload) {
     return;
   }
 
-  const topic = mqttCmdTopicInput.value.trim();
+  const topic = mqttTopics.cmd.trim();
   if (!topic) {
-    alert("Command topic is empty");
+    alert("Command topic is missing in config.js");
     openModal();
     return;
   }
@@ -401,4 +380,14 @@ function clampInt(value, min, max) {
     return max;
   }
   return Math.trunc(n);
+}
+
+function hydrateStream() {
+  if (!videoStream) {
+    return;
+  }
+
+  const defaultUrl = "http://134.98.129.171:8000/stream";
+  videoStream.src = String(globalStream.url || defaultUrl).trim() || defaultUrl;
+  videoStream.alt = String(globalStream.alt || videoStream.alt || "XIAO cloud stream");
 }
